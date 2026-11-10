@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trading Journal Pro - Trade With a Plan, Not Emotions</title>
+  <meta name="description" content="Professional desktop trading journal. Track trades, calculate position size, analyze risk/reward, and make disciplined decisions. One-time payment.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg-deep: #0a0f1c;
+      --bg-surface: #101624;
+      --bg-card: rgba(22, 30, 45, 0.65);
+      --border-glass: rgba(16, 185, 129, 0.15);
+      --border-glass-light: rgba(255, 255, 255, 0.05);
+      --emerald: #10b981;
+      --emerald-glow: rgba(16, 185, 129, 0.25);
+      --emerald-dim: #059669;
+      --text-primary: #f0f4fc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --card-bg: rgba(18, 26, 40, 0.8);
+      --glass-backdrop: blur(12px);
+      --radius-sm: 12px;
+      --radius-md: 18px;
+      --radius-lg: 28px;
+      --shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+      --transition-smooth: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1);
+      --font: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font);
+      background-color: var(--bg-deep);
+      background-image: radial-gradient(circle at 20% 10%, rgba(16, 185, 129, 0.03) 0%, transparent 40%),
+                        radial-gradient(circle at 85% 70%, rgba(16, 185, 129, 0.04) 0%, transparent 45%);
+      color: var(--text-primary);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    img { max-width: 100%; display: block; }
+
+    a, button {
+      cursor: pointer;
+      text-decoration: none;
+      font-family: inherit;
+      transition: var(--transition-smooth);
+    }
+
+    .container { max-width: 1280px; margin: 0 auto; padding: 0 24px; }
+
+    .section-title {
+      font-size: 2.25rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      margin-bottom: 16px;
+    }
+
+    .section-sub {
+      color: var(--text-secondary);
+      font-size: 1.125rem;
+      max-width: 620px;
+      margin-bottom: 56px;
+    }
+
+    .glass-card {
+      background: var(--card-bg);
+      backdrop-filter: var(--glass-backdrop);
+      -webkit-backdrop-filter: var(--glass-backdrop);
+      border: 1px solid var(--border-glass-light);
+      border-radius: var(--radius-md);
+      transition: var(--transition-smooth);
+    }
+
+    .glass-card:hover {
+      border-color: var(--border-glass);
+      box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.1), 0 20px 40px -15px rgba(0, 0, 0, 0.6);
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: var(--emerald);
+      color: #0a0f1c;
+      font-weight: 600;
+      font-size: 1rem;
+      padding: 14px 32px;
+      border-radius: 40px;
+      border: none;
+      box-shadow: 0 8px 24px -8px rgba(16, 185, 129, 0.4);
+      letter-spacing: -0.01em;
+    }
+
+    .btn-primary:hover {
+      background: #0ea371;
+      box-shadow: 0 12px 30px -8px rgba(16, 185, 129, 0.6);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: transparent;
+      color: var(--text-primary);
+      font-weight: 500;
+      font-size: 1rem;
+      padding: 14px 32px;
+      border-radius: 40px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(4px);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--emerald);
+      background: rgba(16, 185, 129, 0.05);
+      color: white;
+    }
+
+    .btn-outline-emerald {
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      background: rgba(16, 185, 129, 0.05);
+      color: var(--emerald);
+      font-weight: 600;
+      padding: 12px 28px;
+      border-radius: 40px;
+    }
+
+    .btn-outline-emerald:hover {
+      background: rgba(16, 185, 129, 0.15);
+      border-color: var(--emerald);
+    }
+
+    /* NAV */
+    .nav-wrap {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      background: rgba(10, 15, 28, 0.8);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 0;
+    }
+
+    .logo {
+      font-weight: 700;
+      font-size: 1.35rem;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo-dot {
+      width: 10px;
+      height: 10px;
+      background: var(--emerald);
+      border-radius: 50%;
+      box-shadow: 0 0 12px var(--emerald);
+    }
+
+    .nav-links { display: flex; gap: 32px; align-items: center; }
+    .nav-links a { color: var(--text-secondary); font-size: 0.95rem; font-weight: 500; }
+    .nav-links a:hover { color: white; }
+
+    /* HERO */
+    .hero { padding: 80px 0 100px; position: relative; }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      color: var(--emerald);
+      font-weight: 500;
+      font-size: 0.85rem;
+      padding: 6px 16px;
+      border-radius: 40px;
+      margin-bottom: 24px;
+      letter-spacing: 0.3px;
+    }
+
+    .hero h1 {
+      font-size: 3.5rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 24px;
+    }
+
+    .hero p {
+      font-size: 1.15rem;
+      color: var(--text-secondary);
+      max-width: 500px;
+      margin-bottom: 36px;
+    }
+
+    .hero-cta { display: flex; flex-wrap: wrap; gap: 16px; }
+
+    .hero-mockup {
+      background: linear-gradient(145deg, #0c1220, #0a0f1a);
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(16, 185, 129, 0.15);
+      padding: 12px;
+      box-shadow: var(--shadow-lg), 0 0 0 1px rgba(16, 185, 129, 0.1);
+    }
+
+    .hero-mockup img {
+      border-radius: var(--radius-md);
+      width: 100%;
+      height: auto;
+      display: block;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    /* PROBLEM / SOLUTION */
+    .problem-solution { padding: 100px 0; }
+
+    .ps-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      margin-top: 40px;
+    }
+
+    .ps-card { padding: 36px 32px; }
+    .ps-icon { font-size: 2rem; margin-bottom: 24px; color: var(--emerald); }
+    .ps-card h3 { font-size: 1.5rem; font-weight: 600; margin-bottom: 16px; letter-spacing: -0.01em; }
+    .ps-card p { color: var(--text-secondary); font-size: 1.05rem; }
+
+    /* PRODUCT SHOWCASE */
+    .showcase { padding: 100px 0; }
+
+    .showcase-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 32px;
+      margin-top: 40px;
+    }
+
+    .feature-card { padding: 32px; display: flex; flex-direction: column; }
+    .feature-card h3 { font-size: 1.5rem; font-weight: 600; margin-bottom: 12px; letter-spacing: -0.01em; }
+    .feature-card p { color: var(--text-secondary); margin-bottom: 28px; flex: 1; }
+
+    /* FIXED IMAGE QUALITY CSS */
+    .feature-card img {
+      width: 100%;
+      height: auto;
+      max-height: 400px;
+      object-fit: contain;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      display: block;
+      margin: 8px auto 0 auto;
+      background-color: var(--bg-deep);
+    }
+
+    /* DISCIPLINE SECTION */
+    .discipline-section {
+      padding: 100px 0;
+      background: linear-gradient(180deg, transparent, rgba(16, 185, 129, 0.02) 50%, transparent);
+    }
+
+    .discipline-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .discipline-list { display: flex; flex-direction: column; gap: 20px; margin-top: 32px; }
+
+    .discipline-item { display: flex; align-items: flex-start; gap: 16px; }
+
+    .discipline-check {
+      width: 24px;
+      height: 24px;
+      background: rgba(16, 185, 129, 0.15);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--emerald);
+      font-weight: 700;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .discipline-item p { color: var(--text-secondary); font-size: 1.05rem; }
+    .discipline-item strong { color: var(--text-primary); font-weight: 600; }
+
+    .rr-demo {
+      padding: 32px;
+      background: var(--card-bg);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-glass-light);
+      backdrop-filter: blur(12px);
+    }
+
+    .rr-demo h4 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 24px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .rr-pill {
+      display: inline-block;
+      padding: 8px 20px;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 16px;
+    }
+
+    .rr-ok {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--emerald);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .rr-warn {
+      background: rgba(245, 158, 11, 0.15);
+      color: #f59e0b;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .rr-reject {
+      background: rgba(239, 68, 68, 0.15);
+      color: #ef4444;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    /* PRICING */
+    .pricing { padding: 100px 0; }
+
+    .pricing-card {
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 48px;
+      text-align: center;
+    }
+
+    .pricing-price {
+      font-size: 4rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--emerald);
+      line-height: 1.1;
+      margin: 24px 0 8px;
+    }
+
+    .pricing-price small {
+      font-size: 1rem;
+      font-weight: 400;
+      color: var(--text-muted);
+      letter-spacing: 0;
+    }
+
+    .pricing-desc { color: var(--text-secondary); margin-bottom: 32px; }
+
+    .pricing-features {
+      text-align: left;
+      margin: 32px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .pricing-features li {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text-secondary);
+      font-size: 1rem;
+    }
+
+    .pricing-features li::before {
+      content: "✓";
+      color: var(--emerald);
+      font-weight: 700;
+    }
+
+    /* FAQ */
+    .faq { padding: 100px 0; }
+
+    .faq-grid {
+      max-width: 800px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .faq-item { padding: 24px 32px; cursor: pointer; transition: var(--transition-smooth); }
+
+    .faq-item summary {
+      font-weight: 600;
+      font-size: 1.1rem;
+      list-style: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .faq-item summary::-webkit-details-marker { display: none; }
+
+    .faq-item summary::after {
+      content: "+";
+      font-size: 1.5rem;
+      color: var(--emerald);
+      font-weight: 300;
+      transition: transform 0.2s;
+    }
+
+    .faq-item[open] summary::after { content: "−"; }
+
+    .faq-answer {
+      margin-top: 16px;
+      color: var(--text-secondary);
+      font-size: 1rem;
+      padding-top: 8px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    /* FINAL CTA */
+    .final-cta { padding: 100px 0 120px; text-align: center; }
+
+    .final-cta h2 {
+      font-size: 2.75rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      max-width: 700px;
+      margin: 0 auto 24px;
+    }
+
+    .final-cta p {
+      color: var(--text-secondary);
+      font-size: 1.15rem;
+      max-width: 560px;
+      margin: 0 auto 40px;
+    }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 40px 0;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 1024px) {
+      .hero-grid, .ps-grid, .discipline-grid { grid-template-columns: 1fr; gap: 40px; }
+      .hero h1 { font-size: 2.8rem; }
+      .showcase-grid { grid-template-columns: 1fr; }
+      .section-title { font-size: 2rem; }
+      .feature-card[style*="grid-column"] { grid-column: auto !important; }
+    }
+
+    @media (max-width: 768px) {
+      .hero { padding: 60px 0 70px; }
+      .hero h1 { font-size: 2.2rem; }
+      .hero p { font-size: 1rem; }
+      .nav-links { display: none; }
+      .pricing-card { padding: 32px 24px; }
+      .final-cta h2 { font-size: 2rem; }
+      .btn-primary, .btn-secondary { padding: 12px 28px; font-size: 0.95rem; }
+      .ps-card, .feature-card { padding: 28px 24px; }
+    }
+
+    @media (max-width: 480px) {
+      .hero-cta { flex-direction: column; width: 100%; }
+      .btn-primary, .btn-secondary { width: 100%; justify-content: center; }
+      .container { padding: 0 20px; }
+    }
+
+    .feature-card, .ps-card { transition: transform 0.2s ease, border-color 0.2s ease; }
+    .feature-card:hover, .ps-card:hover { transform: translateY(-4px); }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <div class="nav-wrap">
+    <div class="container">
+      <nav class="nav">
+        <div class="logo">
+          <span class="logo-dot"></span> Trading Journal Pro
+        </div>
+        <div class="nav-links">
+          <a href="#features">Features</a>
+          <a href="#discipline">Discipline</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#faq">FAQ</a>
+        </div>
+        <a href="#" class="btn-outline-emerald" id="nav-cta" style="padding: 8px 20px; font-size:0.9rem;">Get the Journal</a>
+      </nav>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container hero-grid">
+      <div>
+        <div class="hero-badge">DESKTOP TRADING JOURNAL</div>
+        <h1>Trade With a Plan.<br>Not With Emotions.</h1>
+        <p>A professional desktop trading journal to track trades, calculate position sizes, analyze risk/reward, and make disciplined decisions.</p>
+        <div class="hero-cta">
+          <a href="#" class="btn-primary" id="hero-primary-cta">Get Trading Journal →</a>
+          <a href="#features" class="btn-secondary">Explore Features</a>
+        </div>
+      </div>
+      <div class="hero-mockup">
+        <img src="images/hero-dashboard.webp" 
+             alt="Trading Journal Pro dashboard showing open positions and risk overview" 
+             loading="eager" 
+             fetchpriority="high">
+      </div>
+    </div>
+  </section>
+
+  <!-- PROBLEM / SOLUTION -->
+  <section class="problem-solution">
+    <div class="container">
+      <h2 class="section-title">Stop guessing. Start trading with clarity.</h2>
+      <p class="section-sub">Discipline isn't about willpower, it's about having the right process and the right tools.</p>
+      <div class="ps-grid">
+        <div class="ps-card glass-card">
+          <div class="ps-icon">📋</div>
+          <h3>Organize every trade</h3>
+          <p>Log entries, exits, and notes in one place. See the full picture instead of scattered spreadsheets.</p>
+        </div>
+        <div class="ps-card glass-card">
+          <div class="ps-icon">⚖️</div>
+          <h3>Manage risk before entry</h3>
+          <p>Position sizing and risk/reward built into your workflow, so you never take an oversized position again.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRODUCT SHOWCASE -->
+  <section class="showcase" id="features">
+    <div class="container">
+      <h2 class="section-title">Your complete trading command center</h2>
+      <p class="section-sub">Real software. Real features. Built for traders who are serious about process.</p>
+      <div class="showcase-grid">
+
+        <div class="feature-card glass-card">
+          <h3>Trading Dashboard</h3>
+          <p>Get a quick overview of your performance, open positions, and upcoming risk. One glance tells the story.</p>
+          <img src="images/dashboard.webp" 
+               alt="Trading Dashboard screen with performance summary" 
+               loading="lazy">
+        </div>
+
+        <div class="feature-card glass-card">
+          <h3>Trade Journal</h3>
+          <p>Log every trade with detailed notes, tags, and screenshots. Build a searchable history of your decisions.</p>
+          <img src="images/journal.webp" 
+               alt="Trade Journal screen with logged entries and notes" 
+               loading="lazy">
+        </div>
+
+        <div class="feature-card glass-card">
+          <h3>Calendar Heatmap</h3>
+          <p>Visualize your daily P&L at a glance. Spot winning streaks, identify drawdowns, and track your monthly performance on a beautiful interactive calendar.</p>
+          <img src="images/calendar.webp" 
+               alt="Calendar heatmap showing daily profits and losses" 
+               loading="lazy">
+        </div>
+
+        <div class="feature-card glass-card">
+          <h3>Live R:R Calculator</h3>
+          <p>Type your Entry, Stop Loss, and Take Profit. The journal automatically detects your direction and calculates your R:R instantly.</p>
+          <img src="images/live-rr.webp" 
+               alt="Live Risk to Reward calculator built into the sidebar" 
+               loading="lazy">
+        </div>
+
+        <div class="feature-card glass-card" style="grid-column: span 2; max-width: 100%;">
+          <h3>Data & Backup</h3>
+          <p>Never lose your trading history. Export your journal to CSV, import past data, and keep your records safe with built-in backups.</p>
+          <img src="images/data-backup.webp" 
+               alt="Data and backup screen with CSV export options" 
+               loading="lazy">
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- DISCIPLINE SECTION -->
+  <section class="discipline-section" id="discipline">
+    <div class="container discipline-grid">
+      <div>
+        <h2 class="section-title">Built-in Discipline.<br>Track your edge.</h2>
+        <p class="section-sub" style="margin-bottom:24px;">Your journal does the math, so you can focus on execution.</p>
+        <div class="discipline-list">
+          <div class="discipline-item">
+            <span class="discipline-check">✓</span>
+            <p><strong>Live R:R Calculation</strong>, instantly see your risk/reward before you click save</p>
+          </div>
+          <div class="discipline-item">
+            <span class="discipline-check">✓</span>
+            <p><strong>Automatic direction detection</strong>, long or short based on SL/TP placement</p>
+          </div>
+          <div class="discipline-item">
+            <span class="discipline-check">✓</span>
+            <p><strong>Setup validation</strong>, alerts you if SL or TP is on the wrong side of your entry</p>
+          </div>
+          <div class="discipline-item">
+            <span class="discipline-check">✓</span>
+            <p><strong>Mood & Strategy tracking</strong>, see how your emotional state affects your P&L</p>
+          </div>
+          <div class="discipline-item">
+            <span class="discipline-check">✓</span>
+            <p><strong>Exit Type Analytics</strong>, know your win rate and average P&L for every exit type</p>
+          </div>
+        </div>
+      </div>
+      <div class="rr-demo">
+        <h4>Live R:R Preview</h4>
+        <div class="rr-pill rr-ok" style="margin-bottom:12px;">LONG 1 : 2.80 (Valid Setup)</div>
+        <div class="rr-pill rr-warn" style="margin-bottom:12px;">SHORT 1 : 1.20 (Valid Setup)</div>
+        <div class="rr-pill rr-reject">INVALID (SL/TP on same side)</div>
+        <p style="color:var(--text-muted); font-size:0.9rem; margin-top:24px;">Visual demonstration of the live R:R calculation built into your sidebar.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section class="pricing" id="pricing">
+    <div class="container">
+      <h2 class="section-title" style="text-align: center;">Simple, one-time pricing</h2>
+      <p class="section-sub" style="text-align: center; margin-left: auto; margin-right: auto;">Own it forever. No subscriptions, no hidden fees.</p>
+      <div class="pricing-card glass-card">
+        <div class="pricing-price">$99 <small>one-time</small></div>
+        <div class="pricing-desc">Full desktop license, lifetime updates</div>
+        <ul class="pricing-features">
+          <li>Complete Trading Journal Pro</li>
+          <li>All features: Journal, Live R:R, Calendar</li>
+          <li>Priority support for 1 week</li>
+          <li>Works offline on Windows & macOS & Linux</li>
+        </ul>
+        <a href="#" class="btn-primary" style="width:100%;" id="pricing-cta">Get Trading Journal →</a>
+        <p style="font-size:0.8rem; color:var(--text-muted); margin-top:16px;">One-time payment, instant download</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="faq" id="faq">
+    <div class="container">
+      <h2 class="section-title" style="text-align: center;">Frequently asked questions</h2>
+      <p class="section-sub" style="text-align: center; margin-left: auto; margin-right: auto;">Everything you need to know before you buy.</p>
+      <div class="faq-grid">
+        <details class="faq-item glass-card">
+          <summary>Is this a subscription?</summary>
+          <div class="faq-answer">No. It's a one-time payment. You own the software forever, with no recurring fees.</div>
+        </details>
+        <details class="faq-item glass-card">
+          <summary>What platforms are supported?</summary>
+          <div class="faq-answer">Trading Journal Pro is a desktop application for Windows and macOS and Linux. It runs locally and does not require an internet connection.</div>
+        </details>
+        <details class="faq-item glass-card">
+          <summary>Can I use it on multiple computers?</summary>
+          <div class="faq-answer">Your license covers two personal devices. For additional devices, please contact support.</div>
+        </details>
+        <details class="faq-item glass-card">
+          <summary>Do you offer refunds?</summary>
+          <div class="faq-answer">We do not offer refunds. However, you get 1 week of free support with your purchase. If you experience any problems with the software, contact us and we will fix it for you.</div>
+        </details>
+        <details class="faq-item glass-card">
+         <summary>How do I buy and receive the software?</summary>
+         <div class="faq-answer">Click any "Get Trading Journal" button to contact me directly on Telegram (or Email). I will provide you with a crypto wallet address (USDT/BTC). Once the payment is confirmed, I will send you the software download link and your license key immediately, along with 1 week of free support!</div>
+       </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section class="final-cta">
+    <div class="container">
+      <h2>Take control of your trading process today.</h2>
+      <p>Join the disciplined traders who plan every move, and leave emotions out of the equation.</p>
+      <a href="#" class="btn-primary" style="font-size:1.1rem; padding:16px 40px;" id="final-cta">Get Trading Journal →</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="container">
+    <div>© 2026 Nexushqh. All rights reserved.</div>
+    <div style="display: flex; gap: 24px;">
+      <a href="#" style="color: var(--text-muted);">Privacy</a>
+      <a href="#" style="color: var(--text-muted);">Terms</a>
+      <a href="#" style="color: var(--text-muted);">Support</a>
+    </div>
+  </footer>
+
+  <script>
+    (function() {
+      // ─── CHANGE THIS TO YOUR REAL CHECKOUT LINK ───
+       const PURCHASE_URL = "https://t.me/Nexushqh";
+
+      ['nav-cta', 'hero-primary-cta', 'pricing-cta', 'final-cta'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.setAttribute('href', PURCHASE_URL);
+      });
+
+      console.log("Trading Journal Pro - ready. Purchase URL:", PURCHASE_URL);
+    })();
+  </script>
+</body>
+</html>
